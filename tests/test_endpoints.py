@@ -4,11 +4,13 @@ from app.main import app
 
 client = TestClient(app)
 
+
 # Retorna 200 y msj de status
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
     assert response.json() == {"status": "ok"}
+
 
 # Retorna 200 y lista de endpoints
 def test_services():
@@ -16,6 +18,7 @@ def test_services():
     assert response.status_code == 200
     data = response.json()
     assert isinstance(data, list)
+
 
 # check items basicos: id, name, description
 def test_services_items():
@@ -31,6 +34,7 @@ def test_services_items():
     assert "name" in first
     assert "description" in first
 
+
 # verifica id valido
 def test_get_service_id():
     valid_id = 1  # ajustar al valor del mock
@@ -40,6 +44,7 @@ def test_get_service_id():
     data = response.json()
     assert isinstance(data, dict)
     assert data["id"] == valid_id
+
 
 # id invalido
 def test_get_service_invalid_id():
