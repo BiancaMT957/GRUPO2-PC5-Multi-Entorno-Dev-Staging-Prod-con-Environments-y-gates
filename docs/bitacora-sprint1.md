@@ -3,7 +3,6 @@
 ##  Objetivo  
 Crear la base del backend utilizando FastAPI e implementar los endpoints iniciales del Service Catalog: `/health`, `/services` y `/services/{id}`, utilizando datos mock en memoria.
 
----
 
 ##  Metodología
 
