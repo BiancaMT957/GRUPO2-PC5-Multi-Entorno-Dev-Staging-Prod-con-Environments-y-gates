@@ -9,12 +9,15 @@ Crear la base del backend utilizando FastAPI e implementar los endpoints inicial
 ### **1. Creación de la estructura base del proyecto**
 Se definió la estructura mínima recomendada para mantener orden y permitir escalabilidad:
 
-app/
-├── main.py
+```bash
+project-root/
+├── app/
+│   ├── main.py
+├── models/
+│   ├── service.py
 ├── routers/
-│ └── services.py
-└── models/
-└── service.py
+│   ├── services.py
+```
 
 
 ---
@@ -121,7 +124,6 @@ from app.main import app
 client = TestClient(app)
 ```
 Luego implementamos tests para los siguientes casos:
-# 🧪 Tabla de Tests y su Función Principal
 
 | **Nombre del Test** | **Función Principal** |
 |----------------------|------------------------|
@@ -130,3 +132,12 @@ Luego implementamos tests para los siguientes casos:
 | `test_services_items` | Asegura que al menos un servicio existe y que cada item contiene los campos esenciales: `id`, `name`, `description`. |
 | `test_get_service__id` | Valida que `/services/{id}` devuelve un servicio cuando se usa un ID válido, con la estructura correcta. |
 | `test_get_service_invalid_id` | Revisa que el endpoint devuelva un código 404 y un mensaje de error cuando se solicita un ID inexistente. |
+
+## Ejecucion
+Para la ejecucion añadimos archivos `__init__.py` dentro de las carpetas `app`, `model` y `routers`, que convierten las carpetas en paquetes Python. Esto es muy util, ya que Python y Pytest pueden importar modulos correctamente.
+
+Ejecutamos con el siguiente comando:
+```bash 
+# 80% de cobertura
+pytest --cov=app --cov-fail-under=80 --cov-report=term-missing
+```
