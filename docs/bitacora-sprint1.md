@@ -104,3 +104,29 @@ INFO:     127.0.0.1:42412 - "GET /services/1 HTTP/1.1" 200 OK
 INFO:     127.0.0.1:52842 - "GET /docs HTTP/1.1" 200 OK
 INFO:     127.0.0.1:52842 - "GET /openapi.json HTTP/1.1" 200 OK
 ```
+
+# Issue 2 - Crear tests unitarios para los endpoints
+## Objetivo
+Crear pruebas unitarias usando pytest para validar los endpoints creados.
+## Criterios
+- Crear carpeta `tests/`.
+- Tests para `/health`, `/services`, `/services/{id}`.
+- Cubrir casos de exito y error.
+## Implementacion
+`TestClient` es una herramienta que simula un cliente HTTP, dentro de python. Luego se pasa la aplicacion FastAPI (`app`) para realizar `client.get()`, `client.post()` y otros. Sin la necesidad de levantar el servidor con `uvicorn`.
+```python
+from fastapi.testclient import TestClient
+from app.main import app
+
+client = TestClient(app)
+```
+Luego implementamos tests para los siguientes casos:
+# 🧪 Tabla de Tests y su Función Principal
+
+| **Nombre del Test** | **Función Principal** |
+|----------------------|------------------------|
+| `test_health` | Verifica que el endpoint `/health` responde con codigo 200 y retorna exactamente `{"status": "ok"}`. |
+| `test_services` | Comprueba que el endpoint `/services` devuelve una lista y responde correctamente (código 200). |
+| `test_services_items` | Asegura que al menos un servicio existe y que cada item contiene los campos esenciales: `id`, `name`, `description`. |
+| `test_get_service__id` | Valida que `/services/{id}` devuelve un servicio cuando se usa un ID válido, con la estructura correcta. |
+| `test_get_service_invalid_id` | Revisa que el endpoint devuelva un código 404 y un mensaje de error cuando se solicita un ID inexistente. |
