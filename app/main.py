@@ -9,9 +9,7 @@ app = FastAPI(title="Service Catalog API")
 
 @app.get("/health")
 def health():
-    return {"status": "ok",
-            "env": APP_ENV # indicador del entorno
-    }
+    return {"status": "ok", "env": APP_ENV}  # indicador del entorno
 
 
 app.include_router(services.router)
