@@ -9,7 +9,9 @@ client = TestClient(app)
 def test_health():
     response = client.get("/health")
     assert response.status_code == 200
-    assert response.json() == {"status": "ok"}
+    data = response.json()
+    assert data["status"] == "ok"
+    assert "env" in data
 
 
 # Retorna 200 y lista de endpoints
@@ -17,7 +19,10 @@ def test_services():
     response = client.get("/services")
     assert response.status_code == 200
     data = response.json()
-    assert isinstance(data, list)
+    assert isinstance(data, dict)
+    assert "env" in data
+    assert "services" in data
+    assert isinstance(data["services"], list)
 
 
 # check items basicos: id, name, description
@@ -26,10 +31,11 @@ def test_services_items():
     assert response.status_code == 200
 
     data = response.json()
+    services = data["services"]
     # Si no hay servicios, este test fallara
-    assert len(data) > 0
+    assert len(services) > 0
 
-    first = data[0]
+    first = services[0]
     assert "id" in first
     assert "name" in first
     assert "description" in first
@@ -43,7 +49,11 @@ def test_get_service_id():
 
     data = response.json()
     assert isinstance(data, dict)
-    assert data["id"] == valid_id
+    assert "env" in data
+    assert "service" in data
+
+    service = data["service"]
+    assert service["id"] == valid_id
 
 
 # id invalido
