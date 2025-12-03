@@ -1,0 +1,71 @@
+# ===== PYTHON =====
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.pkl
+*.sqlite3
+*.db
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# ===== FASTAPI / UVICORN =====
+# Logs locales
+*.log
+
+# ===== EDITORS / SYSTEM =====
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# ===== ENV / SECRETS =====
+.env
+*.env
+config/*.env
+
+# ===== DOCKER =====
+# Archivos generados por Docker
+*.pid
+*~ 
+# En caso uses buildx cache:
+.cache/
+
+# ===== KUBERNETES =====
+# Manifests generados temporalmente
+k8s/generated/
+*.kube/
+# Credenciales locales (¡no subir nunca!)
+.kube/config
+
+# ===== SBOM / SECURITY SCANS =====
+.evidence/*
+# Si quieres ignorar TODO excepto el sbom.json real:
+!.evidence/
+!.evidence/sbom.json
+
+# Trivy y Grype outputs
+*.sarif
+*.json.trivy
+*.json.grype
+
+# ===== TESTS =====
+.coverage
+htmlcov/
+pytest.cache/
+
+# ===== MISC =====
+# Archivos temporales
+*.tmp
+*.swp
+*.swo
+
+# ===== CI/CD =====
+# Si generas artefactos dentro del repo
+artifacts/
+
+# .ruff_cache
+.ruff_cache/
