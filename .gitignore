@@ -66,3 +66,6 @@ pytest.cache/
 # ===== CI/CD =====
 # Si generas artefactos dentro del repo
 artifacts/
+
+# .ruff_cache
+.ruff_cache/

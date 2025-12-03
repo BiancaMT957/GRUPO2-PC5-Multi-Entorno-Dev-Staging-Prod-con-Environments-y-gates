@@ -10,9 +10,11 @@ mock_services = [
     Service(id=3, name="Kubernetes Engine", description="Managed Kubernetes clusters"),
 ]
 
+
 @router.get("/")
 def get_services():
     return mock_services
+
 
 @router.get("/{id}")
 def get_service(id: int):
