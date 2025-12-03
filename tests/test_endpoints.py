@@ -13,6 +13,7 @@ def test_health():
     assert data["status"] == "ok"
     assert "env" in data
 
+
 # Retorna 200 y lista de endpoints
 def test_services():
     response = client.get("/services")
@@ -22,6 +23,7 @@ def test_services():
     assert "env" in data
     assert "services" in data
     assert isinstance(data["services"], list)
+
 
 # check items basicos: id, name, description
 def test_services_items():
@@ -52,6 +54,7 @@ def test_get_service_id():
 
     service = data["service"]
     assert service["id"] == valid_id
+
 
 # id invalido
 def test_get_service_invalid_id():
