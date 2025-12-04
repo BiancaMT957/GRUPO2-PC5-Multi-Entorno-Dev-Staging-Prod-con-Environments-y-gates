@@ -1,66 +1,37 @@
+# tests/test_endpoints.py
 from fastapi.testclient import TestClient
-
 from app.main import app
 
 client = TestClient(app)
 
 
-# Retorna 200 y msj de status
-def test_health():
-    response = client.get("/health")
+def test_status_code():
+    """/status debe existir y devolver 200."""
+    response = client.get("/status")
     assert response.status_code == 200
-    data = response.json()
-    assert data["status"] == "ok"
-    assert "env" in data
 
 
-# Retorna 200 y lista de endpoints
-def test_services():
-    response = client.get("/services")
-    assert response.status_code == 200
-    data = response.json()
-    assert isinstance(data, dict)
-    assert "env" in data
-    assert "services" in data
-    assert isinstance(data["services"], list)
-
-
-# check items basicos: id, name, description
-def test_services_items():
-    response = client.get("/services")
+def test_status_body():
+    """El body debe contener 'service' y 'environment' con tipos esperados."""
+    response = client.get("/status")
     assert response.status_code == 200
 
     data = response.json()
-    services = data["services"]
-    # Si no hay servicios, este test fallara
-    assert len(services) > 0
-
-    first = services[0]
-    assert "id" in first
-    assert "name" in first
-    assert "description" in first
-
-
-# verifica id valido
-def test_get_service_id():
-    valid_id = 1  # ajustar al valor del mock
-    response = client.get(f"/services/{valid_id}")
-    assert response.status_code == 200
-
-    data = response.json()
-    assert isinstance(data, dict)
-    assert "env" in data
     assert "service" in data
+    assert data["service"] == "fake-api"
 
-    service = data["service"]
-    assert service["id"] == valid_id
+    assert "environment" in data
+    assert isinstance(data["environment"], str)
 
 
-# id invalido
-def test_get_service_invalid_id():
-    invalid_id = 9999
-    response = client.get(f"/services/{invalid_id}")
-    assert response.status_code == 404
+def test_status_header_environment():
+    """El middleware debe añadir el header 'X-Environment' y coincidir con el campo environment del body."""
+    response = client.get("/status")
+    assert response.status_code == 200
 
     data = response.json()
-    assert "detail" in data or "message" in data
+    # Header presente
+    assert "X-Environment" in response.headers
+
+    # Valor del header debe coincidir con el campo environment del body
+    assert response.headers["X-Environment"] == data["environment"]
