@@ -1,0 +1,58 @@
+name: Build, Scan & SBOM
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+
+  pull_request:
+    branches: [ "main", "develop" ]
+
+
+jobs:
+  build_scan_sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      # 2. Crear carpeta para evidencias
+      - name: Crear carpeta .evidence
+        run: mkdir -p .evidence
+
+      # 3. Build Docker
+      - name: Build Docker image
+        run: |
+          docker build -t grupo2-app:latest .
+
+      # 4. Se instala herramienta Trivy
+      - name: Install Trivy
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y wget
+          wget https://github.com/aquasecurity/trivy/releases/latest/download/trivy_0.49.1_Linux-64bit.deb
+          sudo dpkg -i trivy_0.49.1_Linux-64bit.deb
+
+      # 5. Escaneo Trivy (fallar si hay HIGH o CRITICAL)
+      - name: Run Trivy Scan
+        run: |
+          trivy image --exit-code 1 --severity HIGH,CRITICAL grupo2-app:latest
+        continue-on-error: false
+
+      # 6. Instalar Syft
+      - name: Install Syft
+        run: |
+          curl -sSfL https://raw.githubusercontent.com/anchore/syft/main/install.sh | sh -s -- -b /usr/local/bin
+
+      # 7. Generar SBOM con Syft
+      - name: Generate SBOM
+        run: |
+          syft grupo2-app:latest -o json > .evidence/sbom.json
+
+      # 8. Upload artifacts (opcional para descargar desde Actions)
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom
+          path: .evidence/sbom.json
