@@ -1,15 +1,22 @@
+## app/main.py
 import os
-from fastapi import FastAPI
-from routers import services
+from fastapi import FastAPI, Request
 
-# lee entornos desde var entornos
-APP_ENV = os.getenv("APP_ENV", "unknown")
-app = FastAPI(title="Service Catalog API")
+app = FastAPI()
 
-
-@app.get("/health")
-def health():
-    return {"status": "ok", "env": APP_ENV}  # indicador del entorno
+# Leer APP_ENV, si no existe, usar "dev" por defecto
+APP_ENV = os.getenv("APP_ENV", "dev")
 
 
-app.include_router(services.router)
+@app.middleware("http")
+async def add_env_header(request: Request, call_next):
+    # Añadir un header X-Environment a todas las respuestas
+    response = await call_next(request)
+    response.headers["X-Environment"] = APP_ENV
+    return response
+
+
+@app.get("/status")
+def status():
+    # Respuesta visible por HTTP
+    return {"service": "fake-api", "environment": APP_ENV}

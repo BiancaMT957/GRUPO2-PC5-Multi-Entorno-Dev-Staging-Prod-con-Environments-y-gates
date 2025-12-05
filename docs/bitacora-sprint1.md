@@ -141,3 +141,107 @@ Ejecutamos con el siguiente comando:
 # 80% de cobertura
 pytest --cov=app --cov-fail-under=80 --cov-report=term-missing
 ```
+
+# Issue 3 — Configurar pipeline CI (ci.yml)
+## Objetivo
+
+Implementar un pipeline de Integración Continua (CI) en GitHub Actions que ejecute automáticamente:
+
+Linter (Ruff)
+
+Formateador (Black)
+
+Pruebas unitarias (pytest)
+
+Esto garantiza que el código cumpla estándares de estilo y que los tests pasen antes de permitir un merge en la rama principal.
+
+## Criterios de aceptación
+
+Crear el archivo:
+.github/workflows/ci.yml
+
+El pipeline debe ejecutarse automáticamente en:
+
+push a cualquier rama
+
+pull_request hacia cualquier rama
+
+Debe fallar si:
+
+El código no está formateado correctamente (Black)
+
+Hay errores de lint (Ruff)
+
+Algún test falla (pytest)
+
+En los videos del sprint debe verse:
+
+Ejecución de Ruff, Black y pytest
+
+El pipeline corriendo correctamente
+
+## Implementación
+1. Crear el archivo del workflow
+
+Se agrega .github/workflows/ci.yml con el siguiente contenido:
+
+name: CI
+
+on:
+  push:
+    branches: ["*"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install black ruff pytest pytest-cov
+
+      # Fix necesario para que Python encuentre la carpeta "app" en GitHub Actions
+      - name: Fix Python path
+        run: echo "PYTHONPATH=$PYTHONPATH:$(pwd)" >> $GITHUB_ENV
+
+      - name: Run Ruff (linter)
+        run: ruff check .
+
+      - name: Run Black (code formatter check)
+        run: black --check .
+
+      - name: Run pytest
+        run: pytest -q
+
+## Qué valida cada herramienta
+Herramienta	Función
+Ruff	Revisa errores de estilo, calidad y buenas prácticas (alternativa moderna a flake8).
+Black	Verifica que todo el código esté formateado correctamente.
+pytest	Ejecuta los tests unitarios y falla si algún endpoint no funciona.
+## Ejecución en GitHub Actions
+
+Cada vez que se haga push o pull request, GitHub:
+
+Instalará dependencias.
+
+Correrá Ruff.
+
+Correrá Black en modo --check.
+
+Ejecutará pytest.
+
+Aceptará o rechazará el PR según el resultado.
+
+Esto asegura que solo se mergea código limpio y funcional.
