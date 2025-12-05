@@ -193,28 +193,18 @@ Este pipeline define todas las etapas necesarias para validar seguridad y genera
 ## Ejecución
 
 El pipeline NO se ejecuta manualmente.
-Se activa automáticamente cuando:
-
-* Haces push:
+Se activa automáticamente cuando hacemos:
+```bash
 git push origin develop
-
-
-o
-
+# O
 git push origin main
-
-* Creas un Pull Request hacia:
-
-main
-
-develop
-
-GitHub Actions comenzará a correr el workflow.
+```
+Creas un Pull Request hacia: `main` o `develop`. GitHub Actions comenzará a correr el workflow.
 
 ### Qué debe aparecer en GitHub Actions
 
 Si todo está bien:
-
+```bash
 ✔ Checkout repository
 ✔ Crear carpeta .evidence
 ✔ Build Docker image
@@ -223,24 +213,19 @@ Si todo está bien:
 ✔ Instalar Syft
 ✔ Generar archivo SBOM
 ✔ Subir SBOM como artifact
-
-SUCCESS
-
+```
 
 El archivo generado estará disponible como:
-
+```bash
  Artifact: sbom
  Contenido: .evidence/sbom.json
-
+```
 ## Cuando debe fallar
 
-El pipeline se detendrá si Trivy detecta:
-
-* HIGH
-
-* CRITICAL
+El pipeline se detendrá si Trivy detecta: `HIGH` / `CRITICAL`.
 
 Y verás algo así:
-
+```bash
 CRITICAL vulnerability found
 Error: Process completed with exit code 1.
+```
