@@ -1,0 +1,2 @@
+http://localhost:8000/services/
+[{"id":1,"name":"Compute Engine","description":"Virtual machines"},{"id":2,"name":"Cloud Storage","description":"Object storage service"},{"id":3,"name":"Kubernetes Engine","description":"Managed Kubernetes clusters"}]

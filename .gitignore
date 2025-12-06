@@ -41,12 +41,6 @@ k8s/generated/
 # Credenciales locales (¡no subir nunca!)
 .kube/config
 
-# ===== SBOM / SECURITY SCANS =====
-.evidence/*
-# Si quieres ignorar TODO excepto el sbom.json real:
-!.evidence/
-!.evidence/sbom.json
-
 # Trivy y Grype outputs
 *.sarif
 *.json.trivy

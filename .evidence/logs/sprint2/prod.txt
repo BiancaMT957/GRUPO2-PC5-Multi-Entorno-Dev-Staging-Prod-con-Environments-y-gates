@@ -1,0 +1,16 @@
+(venv) bianca007@MSI:/mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ APP_ENV=prod uvicorn app.main:app --reload --port 8080
+INFO:     Will watch for changes in these directories: ['/mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates']
+INFO:     Uvicorn running on http://127.0.0.1:8080 (Press CTRL+C to quit)
+INFO:     Started reloader process [11256] using StatReload
+INFO:     Started server process [11258]
+INFO:     Waiting for application startup.
+INFO:     Application startup complete.
+INFO:     127.0.0.1:33006 - "GET /status HTTP/1.1" 200 OK
+^CINFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [11258]
+INFO:     Stopping reloader process [11256]
+
+
+{"service":"fake-api","environment":"prod"}

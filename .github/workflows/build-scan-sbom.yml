@@ -1,0 +1,47 @@
+name: Build, Scan & SBOM
+
+on:
+  push:
+    branches: ["main", "develop"]
+  pull_request:
+    branches: ["main", "develop"]
+
+jobs:
+  build-scan-sbom:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Build Docker image
+        run: |
+          docker build -t api-dev:latest -f Dockerfile .
+
+      - name: Create .evidence directory
+        run: mkdir -p .evidence
+
+      # Generar SBOM con Syft (sobre la imagen construida)
+      - name: Generate SBOM with Syft
+        run: |
+          docker run --rm \
+            -v /var/run/docker.sock:/var/run/docker.sock \
+            -v "$PWD":/workspace \
+            anchore/syft:latest \
+            "docker:api-dev:latest" -o json > .evidence/sbom.json
+
+      # Escanear SBOM con Grype y fallar en vulnerabilidades CRITICAL
+      - name: Scan SBOM with Grype (fail on CRITICAL)
+        run: |
+          docker run --rm \
+            -v "$PWD":/workspace \
+            anchore/grype:latest \
+            sbom:/workspace/.evidence/sbom.json \
+            --fail-on Critical
+
+      # Subir el SBOM como artifact para inspección
+      - name: Upload SBOM artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: sbom-json
+          path: .evidence/sbom.json
