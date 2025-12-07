@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: catalog-prod
+data:
+  APP_ENV: "prod"
+  BANNER: "Service Catalog - PRODUCTION environment"

@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: catalog-staging
+data:
+  APP_ENV: "staging"
+  BANNER: "Service Catalog - STAGING environment"

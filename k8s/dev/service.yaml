@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: catalog-api
+  namespace: catalog-dev
+spec:
+  type: NodePort  # Para probar en Minikube/kind
+  selector:
+    app: catalog-api
+  ports:
+    - port: 80          # puerto del Service dentro del cluster
+      targetPort: 8000  # puerto del contenedor (FastAPI)
+      nodePort: 30080   # puerto en el nodo (para acceder desde tu PC)
