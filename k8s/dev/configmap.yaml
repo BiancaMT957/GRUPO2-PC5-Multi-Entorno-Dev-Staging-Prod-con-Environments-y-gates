@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: catalog-config
+  namespace: catalog-dev
+data:
+  APP_ENV: "dev"
+  BANNER: "Service Catalog - DEV environment"

@@ -1,0 +1,43 @@
+# Evitar copiar el entorno virtual
+venv/
+.env
+.env.*
+*.venv/
+
+# Archivos y cachés de Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Carpeta de pruebas y reportes
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Git y configuración local
+.git/
+.gitignore
+.gitattributes
+
+# Configuración del editor (VSCode)
+.vscode/
+*.code-workspace
+
+# Archivos del proyecto que NO deben ir dentro del contenedor
+docker-compose*.yml
+docs/
+.evidence/
+sboms/
+reports/
+
+# Imágenes, capturas, evidencias
+*.png
+*.jpg
+*.jpeg
+*.svg
+
+# Otros archivos innecesarios
+*.log
+*.tmp
+*.bak
