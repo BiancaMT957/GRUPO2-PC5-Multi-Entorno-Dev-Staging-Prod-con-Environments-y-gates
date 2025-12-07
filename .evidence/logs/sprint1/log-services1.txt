@@ -1,0 +1,2 @@
+http://localhost:8000/services/1
+{"id":1,"name":"Compute Engine","description":"Virtual machines"}

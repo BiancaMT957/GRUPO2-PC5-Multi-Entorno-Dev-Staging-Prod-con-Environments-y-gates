@@ -1,0 +1,14 @@
+(venv) bianca007@MSI:/mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ pytest -q
+.....                                                                                           [100%] 
+5 passed in 5.07s
+(venv) bianca007@MSI:/mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ pytest
+========================================= test session starts =========================================
+platform linux -- Python 3.12.3, pytest-9.0.1, pluggy-1.6.0
+rootdir: /mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates
+plugins: anyio-4.12.0
+collected 5 items                                                                                     
+
+tests/test_endpoints.py .....                                                                   [100%]
+
+========================================== 5 passed in 4.91s ==========================================
+(venv) bianca007@MSI:/mnt/c/Users/Bianca/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$
