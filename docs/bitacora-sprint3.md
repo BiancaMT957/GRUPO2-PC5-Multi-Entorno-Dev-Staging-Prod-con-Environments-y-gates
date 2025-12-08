@@ -135,3 +135,29 @@ mkdir -p .evidence
 echo "ENV=... TIME=... SHA=... REF=..." >> .evidence/deploy-log-<env>-<run>.txt
 ```
 Se generan los archivos y se suben como artifacts en cada job.
+
+## Ejecucion
+1. Una vez mergeado el PR a la rama `develop`, en ese momento:
+- El archivo `deploy_env.yml` pasa a vivir en `develop`.
+- GitHub registra el workflow.
+- En la pestaña Actions aparecera "**Deploy Enviroments**"
+2. Probar el workflow manualmente:
+- PASO A: Abrir el workflow de Action
+  - Ir a la pestaña Actions del repositorio
+  - Hacer clic en "**Deploy Enviroments**"
+  - Hacer clic en el boton "**Run workflow**"
+
+- PASO B: Elegir la rama y lanzar
+  - En el combo del branch, seleccionar `develop`.
+  - Hacer clic en "**Run workflow**".
+  - Se ejecutó el workflow con el evento `workflow_dispatch`.
+
+  Eso dispara el evento: `deploy_dev` y `deploy_staging` se ejecutan manualmente:
+  ```yaml
+  if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/develop')
+  ```
+- PASO C: Ver ejecucion y evidence
+  - En la lista de ejecucion, veras el run que se creo.
+  - Dentro del run veras: `deploy_dev` y los otros.
+  - En cada job revisa los logs 
+  - Descarga artifacts: `deploy-dev-logs` y otros.
