@@ -79,3 +79,85 @@ minikube service catalog-api -n catalog-dev --url
 curl <url>/status
 ```
 Finalmente repetimos los mismos pasos para `staging` y `prod`. Las salidas se adjuntan en `.evidence`.
+
+# Issue 9 - Crear workflow deploy_env.yml con gates (dev → staging → prod)
+## Descripcion
+Pipeline completo con approvals y reglas de ambientes de GitHub.
+## Que hacer
+- Job: deploy_dev (auto).
+- Job: deploy_staging (requiere approval).
+- Job: deploy_prod (solo tags v*).
+- Generar logs en .evidence/.
+## Criterios de aceptacion
+- Flujo completo: `push → dev → approval → staging → tag → prod`.
+- Logs en `.evidence/deploy-log-*.txt`.
+## Implementacion
+### Gate 1: DEV > STAGING (enviroments + required reviewers en `staging`)
+Primero haremos una breve configuracion en el repositorio:
+1. Ir a **Settings** > **Enviroments** en el repositorio.
+2. Crear un enviroment llamado `staging`.
+3. Activar "**Required reviewers/Approvals**" para ese enviroment.
+4. En el workflow, el job tiene:
+    ```yaml
+    needs: deploy_dev   # staging corre si dev fue exitoso
+    environment:
+        name: staging   # enviroment de GitHub
+    ```
+Con eso cuando el pipeline llega a `deploy staging`:
+- GitHub detiene el job.
+- Muestra un boton tipo "**Required reviewers/Approvals**".
+- Hasta que alguien aprueba, **no se ejecuta** el deploy a staging.
+
+### Gate 2: STAGING > PROD (solo se ejecuta `deploy_prod` si el push es un tag v*)`
+```yaml
+on:
+  push:
+    tags:
+      - "v*"
+...
+if: startsWith(github.ref, 'refs/tags/v')
+```
+Flujo:
+1. Se aprueba en `develop`.
+2. Se despliega a dev y staging
+3. El equipo valida staging
+4. Cuando aprueban, crean un tag
+```bash
+git tag v1.0.0
+git push origin v1.0.0
+```
+5. Ese push del tag v1.0.0 dispara solo el job deploy_prod.
+
+### Logs en `.evidence/`
+Cada job hace:
+```bash
+mkdir -p .evidence
+echo "ENV=... TIME=... SHA=... REF=..." >> .evidence/deploy-log-<env>-<run>.txt
+```
+Se generan los archivos y se suben como artifacts en cada job.
+
+## Ejecucion
+1. Una vez mergeado el PR a la rama `develop`, en ese momento:
+- El archivo `deploy_env.yml` pasa a vivir en `develop`.
+- GitHub registra el workflow.
+- En la pestaña Actions aparecera "**Deploy Enviroments**"
+2. Probar el workflow manualmente:
+- PASO A: Abrir el workflow de Action
+  - Ir a la pestaña Actions del repositorio
+  - Hacer clic en "**Deploy Enviroments**"
+  - Hacer clic en el boton "**Run workflow**"
+
+- PASO B: Elegir la rama y lanzar
+  - En el combo del branch, seleccionar `develop`.
+  - Hacer clic en "**Run workflow**".
+  - Se ejecutó el workflow con el evento `workflow_dispatch`.
+
+  Eso dispara el evento: `deploy_dev` y `deploy_staging` se ejecutan manualmente:
+  ```yaml
+  if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/develop')
+  ```
+- PASO C: Ver ejecucion y evidence
+  - En la lista de ejecucion, veras el run que se creo.
+  - Dentro del run veras: `deploy_dev` y los otros.
+  - En cada job revisa los logs 
+  - Descarga artifacts: `deploy-dev-logs` y otros.
