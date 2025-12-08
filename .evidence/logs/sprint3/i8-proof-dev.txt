@@ -1,0 +1,22 @@
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ kubectl apply -f k8s/dev/namespace.yaml
+namespace/catalog-dev created
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ kubectl apply -f k8s/dev
+configmap/catalog-config created
+deployment.apps/catalog-api created
+namespace/catalog-dev unchanged
+service/catalog-api created
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ kubectl get all -n catalog-dev
+NAME                               READY   STATUS    RESTARTS   AGE
+pod/catalog-api-7ffff4f7b5-qf9tj   0/1     Running   0          5s
+
+NAME                  TYPE       CLUSTER-IP      EXTERNAL-IP   PORT(S)        AGE
+service/catalog-api   NodePort   10.111.60.158   <none>        80:30080/TCP   5s
+
+NAME                          READY   UP-TO-DATE   AVAILABLE   AGE
+deployment.apps/catalog-api   0/1     1            0           5s
+
+NAME                                     DESIRED   CURRENT   READY   AGE
+replicaset.apps/catalog-api-7ffff4f7b5   1         1         0       5s
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ minikube service catalog-api -n catalog-dev --url
+http://127.0.0.1:32941
+❗  Because you are using a Docker driver on linux, the terminal needs to be open to run it.
