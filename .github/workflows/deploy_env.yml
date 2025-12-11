@@ -1,0 +1,100 @@
+name: Deploy Environments
+
+on:
+  push:
+    branches:
+      - develop          # despliegues reales a dev/staging
+    tags:
+      - "v*"             # despliegues reales a prod
+  workflow_dispatch:      # lanzamiento manual
+
+jobs:
+  deploy_dev:
+    name: Deploy to DEV
+    runs-on: ubuntu-latest
+    # Corre en "Run workflow" en GitHub Actions y automáticamente solo en develop
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/develop')
+    environment:
+      name: dev
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare .evidence directory
+        run: mkdir -p .evidence
+
+      - name: Simulate deploy to DEV
+        run: |
+          echo "Deploying to DEV..."
+          echo "kubectl apply -f k8s/dev" >> .evidence/deploy-log-dev-${{ github.run_number }}.txt
+
+      - name: Write DEV deploy log
+        run: |
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "ENV=dev TIME=$TS SHA=${GITHUB_SHA} REF=${GITHUB_REF}" >> .evidence/deploy-log-dev-${{ github.run_number }}.txt
+
+      - name: Upload DEV deploy logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-dev-logs
+          path: .evidence/deploy-log-dev-*.txt
+
+  deploy_staging:
+    name: Deploy to STAGING
+    runs-on: ubuntu-latest
+    needs: deploy_dev
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/heads/develop')
+    environment:
+      name: staging       # configuracion approvals en Settings → Environments
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare .evidence directory
+        run: mkdir -p .evidence
+
+      - name: Simulate deploy to STAGING
+        run: |
+          echo "Deploying to STAGING..."
+          echo "kubectl apply -f k8s/staging" >> .evidence/deploy-log-staging-${{ github.run_number }}.txt
+
+      - name: Write STAGING deploy log
+        run: |
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "ENV=staging TIME=$TS SHA=${GITHUB_SHA} REF=${GITHUB_REF}" >> .evidence/deploy-log-staging-${{ github.run_number }}.txt
+
+      - name: Upload STAGING deploy logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-staging-logs
+          path: .evidence/deploy-log-staging-*.txt
+
+  deploy_prod:
+    name: Deploy to PROD
+    runs-on: ubuntu-latest
+    # Solo cuando el ref es un tag v*
+    if: startsWith(github.ref, 'refs/tags/v')
+    environment:
+      name: prod
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Prepare .evidence directory
+        run: mkdir -p .evidence
+
+      - name: Simulate deploy to PROD
+        run: |
+          echo "Deploying to PROD..."
+          echo "kubectl apply -f k8s/prod" >> .evidence/deploy-log-prod-${{ github.run_number }}.txt
+
+      - name: Write PROD deploy log
+        run: |
+          TS=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          echo "ENV=prod TIME=$TS SHA=${GITHUB_SHA} REF=${GITHUB_REF}" >> .evidence/deploy-log-prod-${{ github.run_number }}.txt
+
+      - name: Upload PROD deploy logs
+        uses: actions/upload-artifact@v4
+        with:
+          name: deploy-prod-logs
+          path: .evidence/deploy-log-prod-*.txt

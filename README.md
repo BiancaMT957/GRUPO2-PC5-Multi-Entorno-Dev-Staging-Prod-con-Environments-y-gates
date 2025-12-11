@@ -1,128 +1,299 @@
 # Proyecto 2 — Multi-Entorno Dev/Staging/Prod con GitHub Environments & Gates
 
-API interna desarrollada con Python + FastAPI, diseñada para funcionar en tres entornos (dev, staging, prod) con despliegues controlados mediante pipelines DevSecOps, escaneo de seguridad y un flujo CI/CD con aprobaciones.
+# Proyecto — Multi-Entorno Dev · Staging · Prod con GitHub Actions, Docker y Kubernetes
 
-# Características principales
-## Endpoints Sprint 1
+##  Descripción
 
-GET /health → estado del servicio
+Este proyecto implementa un pipeline completo de CI/CD utilizando:
 
-GET /services → lista de servicios mock en memoria
+- GitHub Actions  
+- Entornos protegidos (Dev, Staging, Prod)  
+- Deploy automatizado a Kubernetes (Minikube/kind)  
+- Docker y Docker Compose para entorno local  
+- Generación de SBOM y análisis de seguridad  
+- Gates de aprobación por entorno  
 
-GET /services/{id} → detalle de un servicio o 404
+La aplicación base es una API Python (Flask/FastAPI) contenida en `app/main.py` y desplegada en múltiples entornos mediante configuraciones en `k8s/<entorno>/`.
 
-## Arquitectura del proyecto
+---
 
-FastAPI modular (routers / models / main)
+## 1️ Requisitos previos
 
-Tests unitarios con pytest
+Asegúrate de tener instalados:
 
-Integración continua: ci.yml (lint + tests en PR)
+```
+docker --version
+docker compose version
+git --version
+```
 
-## Sprint 2
+## 2 Clonar el repositorio
 
-Dockerfile seguro (slim, non-root, healthcheck)
 
-docker-compose.dev.yml
+```
+git clone https://github.com/BiancaMT957/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates.git
+cd GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates
+```
 
-Configuraciones por entorno vía variables de entorno
+## 3) Estructura del proyecto
 
-API responde incluyendo el entorno actual (dev/staging/prod)
+.
+├── evidence/
+├── github/
+├── docs/
+├── app/
+│   ├── main.py
+│   └── __init__.py
+├── models/
+│   └── service.py
+├── routers/
+│   └── services.py
+├── tests/
+│   └── test_endpoints.py
+├── k8s/
+│   ├── dev/
+│   ├── staging/
+│   └── prod/
+├── docker-compose.dev.yml
+├── Dockerfile
+├── requirements.txt
+├── Readme.md
+├── .github/
+│   └── workflows/
+│       ├── ci.yml
+│       ├── deploy_env.yml
+│       └── build-scan-sbom.yml
+Cada entorno contiene:
 
-build_scan_sbom.yml → genera SBOM y ejecuta Trivy/Grype
+namespace.yaml
 
-Evidencia en .evidence/
+deployment.yaml
 
-## Sprint 3
+service.yaml
 
-Despliegue multi-entorno en Kubernetes
+configmap.yaml
 
-Namespaces:
+## Variables de entorno
+Variable	Descripción	Entorno
+APP_ENV	Nombre del entorno	dev / staging / prod
+APP_NAME	Nombre del servicio	service-api
+SERVICE_MESSAGE	Mensaje mostrado en /health	según entorno
 
-catalog-dev
+Ejemplo de ConfigMap:
 
-catalog-staging
+yaml
+data:
+  APP_ENV: "dev"
+  SERVICE_MESSAGE: "Servicio ejecutándose en DEV"
 
-catalog-prod
 
-Manifests por entorno con ConfigMaps + réplicas diferentes
+## 4)Cómo levantar cada entorno
+### Desarrollo
 
-Pipeline deploy_env.yml con gates:
-
-Dev → despliegue automático
-
-Staging → requiere aprobación
-
-Prod → solo en tags v* + aprobación
-
-## Estructura del proyecto (simplificada)
-app/
- ├── main.py
- ├── routers/
- │    └── services.py
- ├── models/
- │    └── service.py
-tests/
- .evidence/
-Dockerfile
-docker-compose.dev.yml
-.github/workflows/
- ├── ci.yml
- ├── build_scan_sbom.yml
- └── deploy_env.yml
-
-# Cómo ejecutar el proyecto localmente
-### Instalar dependencias
-pip install -r requirements.txt
-
-### Ejecutar FastAPI con Uvicorn
-uvicorn app.main:app --reload
-
-### Abrir documentación interactiva
-
-Swagger UI → http://127.0.0.1:8000/docs
-
-ReDoc → http://127.0.0.1:8000/redoc
-
-## Ejecutar con Docker (modo dev)
 docker compose -f docker-compose.dev.yml up --build
 
+###  Staging
 
-El endpoint debe devolverte algo como:
+docker compose -f docker-compose.staging.yml up --build
 
-{
-  "environment": "dev",
-  "services": [...]
-}
-## Seguridad y Evidencias
+### Producción
 
-Este proyecto implementa prácticas DevSecOps:
+docker compose -f docker-compose.prod.yml up --build -d
 
-Análisis de vulnerabilidades con Trivy y Grype
+## 5)Comandos útiles
+Ver logs
 
-Generación de SBOM (Syft)
+```
+docker compose logs -f
+```
 
-Archivos almacenados en .evidence/
+Detener contenedores
 
-## CI/CD (Resumen de pipelines)
-ci.yml
+```
+docker compose down
+```
 
-Ejecutado en cada Pull Request
+Reconstruir sin usar caché
 
-Corre lint + tests
+```
+docker compose build --no-cache
+```
 
-build_scan_sbom.yml
+## 6) Despliegue (Deploy)
+Crear un tag
 
-Construye imagen
+
+```
+git tag -a v1.0.0 -m "Primera release"
+git push origin v1.0.0
+Ejecutar workflow manual
+gh workflow run deploy-prod.yml
+```
+## 7) Verificación del entorno
+Healthcheck
+
+```
+curl http://localhost:8000/health
+```
+
+## 8) Variables de entorno (creación y export)
+Crear archivo .env
+
+```
+cp .env.example .env.dev
+```
+
+Exportar variable temporal
+
+```
+export APP_ENV=dev
+```
+
+## 9) CI: Integración Continua
+El pipeline de CI se ejecuta en .github/workflows/ci.yml e incluye:
+
+Linter ruff
+
+Formateador black
+
+Pruebas unitarias con pytest
+
+Build temporal de imagen
+
+Runners utilizados
+GitHub-hosted runners
+Se usan para:
+
+Lint
+
+Formateo
+
+Tests
+
+Build sin push
+
+Self-hosted runner
+Se usa cuando se requiere:
+
+Docker real
+
+Docker Compose
+
+Deploy a Minikube/kind
+
+kubectl apply
+
+Construcción + push de imágenes
+
+Ejemplo:
+
+runs-on: self-hosted
+
+## 10) CD: Deploy por entorno
+Workflow: .github/workflows/deploy_env.yml
+
+Branch	Entorno	Protección
+dev	Dev	Sin aprobación
+staging	Staging	Requiere aprobación
+main	Prod	Aprobación obligatoria
+
+## 11) Docker / Docker Compose
+Levantar ambiente local:
+
+
+```
+docker compose -f docker-compose.dev.yml up --build
+```
+
+
+## 12) Kubernetes
+Aplicar manifiestos de un entorno:
+
+
+kubectl apply -f k8s/dev/
+Estructura por entorno:
+
+deployment
+
+service
+
+configmap
+
+namespace
+
+
+## 13)Seguridad y SBOM
+El workflow build-scan-sbom.yml:
+
+Genera SBOM (CycloneDX)
 
 Escanea vulnerabilidades
 
-Genera SBOM → .evidence/sbom.json
+Guarda resultados en .evidence/logs/
 
-deploy_env.yml
+## 14) Evidencias del proyecto
+Incluye:
 
-dev → automático
+Screenshots
 
-staging → requiere aprobación manual
+Logs
 
-prod → solo tags v* + aprobación
+Reportes SBOM
+
+Evidencias de test
+
+Ubicación:
+
+.evidence/img/
+.evidence/logs/
+
+
+
+## 15)Ejecutar la API sin Docker
+
+
+```
+python3 app/main.py
+```
+
+###  Límites de Trabajo en Progreso (WIP)
+
+Para evitar sobrecarga en el equipo y garantizar flujo constante, se definió un límite de WIP:
+
+| Columna | Límite WIP |
+|---------|------------|
+| Doing   | **2–3 ítems máximo** |
+
+Este límite debe respetarse antes de mover nuevas tareas a *Doing*.
+
+---
+
+###  Reglas de uso del tablero
+
+Estas son las reglas oficiales para operar el tablero Kanban del proyecto:
+
+1. **Toda tarea debe tener una Issue.**  
+2. **Nada puede entrar en Doing si Doing ya alcanzó su WIP máximo.**  
+3. **Todo trabajo en Review requiere un Pull Request enlazado.**  
+4. **Una Issue solo puede moverse a Done si su PR está mergeado.**  
+5. **Cada movimiento entre columnas debe hacerse manualmente o mediante automatización de GitHub.**  
+6. **Las tareas deben tener asignado un responsable antes de iniciar.**
+
+---
+
+###  Trazabilidad (Issues → PRs)
+
+Cada issue del tablero está:
+
+- Asociada a un branch específico siguiendo la convención  
+  `feature/<issue-number>-descripcion-corta`
+- Enlazada al Pull Request correspondiente
+- Mapeada automáticamente en el tablero según el estado del PR
+
+Esto garantiza:
+
+- Historial claro de cambios  
+- Flujo limpio desde Backlog → Done  
+- Rastreabilidad total por auditorías o revisión
+
+---

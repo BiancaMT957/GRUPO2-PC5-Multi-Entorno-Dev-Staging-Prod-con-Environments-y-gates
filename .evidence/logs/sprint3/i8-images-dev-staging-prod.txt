@@ -1,0 +1,36 @@
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ docker build -t catalog-api:dev .
+[+] Building 51.8s (13/13) FINISHED                                                                  docker:default
+ => [internal] load build definition from Dockerfile                                                           0.1s
+ => => transferring dockerfile: 930B                                                                           0.1s
+ => [internal] load metadata for docker.io/library/python:3.12-slim                                            4.1s
+ => [internal] load .dockerignore                                                                              0.1s
+ => => transferring context: 625B                                                                              0.1s
+ => [1/8] FROM docker.io/library/python:3.12-slim@sha256:b43ff04d5df04ad5cabb80890b7ef74e8410e3395b19af970dcd  8.0s
+ => => resolve docker.io/library/python:3.12-slim@sha256:b43ff04d5df04ad5cabb80890b7ef74e8410e3395b19af970dcd  0.0s
+ => => sha256:b7ba6d2a1fc72f9587288b3b60221d1b07dae4f61a41360d2cc281fe7c007b3a 250B / 250B                     0.4s
+ => => sha256:490b9a1c25e472ab1cceab4ed6f3bd252006f7c6eea0ef7ba845c996adb6f302 1.29MB / 1.29MB                 0.9s
+ => => sha256:0674d14a155c94f13e648265aa3ba62410e1fe0387fef64cc608388e54232880 12.11MB / 12.11MB               2.3s
+ => => sha256:0e4bc2bd6656e6e004e3c749af70e5650bac2258243eb0949dea51cb8b7863db 29.78MB / 29.78MB               3.8s
+ => => extracting sha256:0e4bc2bd6656e6e004e3c749af70e5650bac2258243eb0949dea51cb8b7863db                      2.5s
+ => => extracting sha256:490b9a1c25e472ab1cceab4ed6f3bd252006f7c6eea0ef7ba845c996adb6f302                      0.3s
+ => => extracting sha256:0674d14a155c94f13e648265aa3ba62410e1fe0387fef64cc608388e54232880                      1.1s
+ => => extracting sha256:b7ba6d2a1fc72f9587288b3b60221d1b07dae4f61a41360d2cc281fe7c007b3a                      0.0s
+ => [internal] load build context                                                                              5.9s
+ => => transferring context: 139.95MB                                                                          5.8s
+ => [2/8] RUN apt-get update     && apt-get install -y --no-install-recommends curl     && rm -rf /var/lib/ap  9.6s
+ => [3/8] WORKDIR /app                                                                                         0.1s
+ => [4/8] RUN groupadd -g 1001 appuser     && useradd -u 1001 -g appuser -s /usr/sbin/nologin -m appuser       0.5s
+ => [5/8] COPY requirements.txt .                                                                              0.1s
+ => [6/8] RUN pip install --no-cache-dir -r requirements.txt                                                  17.0s
+ => [7/8] COPY . .                                                                                             0.6s
+ => [8/8] RUN chown -R appuser:appuser /app                                                                    0.9s
+ => exporting to image                                                                                        10.5s
+ => => exporting layers                                                                                        7.3s
+ => => exporting manifest sha256:2e7de9ca575f51e050a5248f290bf630d06c1bca3b592973603481d194ee27c5              0.0s
+ => => exporting config sha256:dc4a0d1a1a9cef379eb32b9333e5c787f39ab9a319857a3ecdea05bd42cfa7ec                0.0s
+ => => exporting attestation manifest sha256:f76dba9a84bd751729c816032f6735e32c006f6b93affb6e822589a2095daff1  0.0s
+ => => exporting manifest list sha256:b61b57326a5191ac632585bd8d2e91ea2abc3884a5e244838a4f665cf813e137         0.0s
+ => => naming to docker.io/library/catalog-api:dev                                                             0.0s
+ => => unpacking to docker.io/library/catalog-api:dev                                                          3.0s
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ docker tag catalog-api:dev catalog-api:staging
+(venv) luis@LAPTOP-LC:/mnt/c/Users/Luis/Documents/GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates$ docker tag catalog-api:dev catalog-api:prod

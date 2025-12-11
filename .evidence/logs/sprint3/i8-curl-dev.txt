@@ -1,0 +1,21 @@
+PS C:\Users\Luis\Documents\GRUPO2-PC5-Multi-Entorno-Dev-Staging-Prod-con-Environments-y-gates> curl http://127.0.0.1:32941/openapi.json
+
+
+StatusCode        : 200
+StatusDescription : OK
+Content           : {"openapi":"3.1.0","info":{"title":"FastAPI","version":"0.1.0"},"paths":{"/status":{"get":{"sum 
+                    mary":"Status","operationId":"status_status_get","responses":{"200":{"description":"Successful  
+                    Response",...
+RawContent        : HTTP/1.1 200 OK
+                    x-environment: dev
+                    Content-Length: 250
+                    Content-Type: application/json
+                    Date: Sun, 07 Dec 2025 15:59:57 GMT
+                    Server: uvicorn
+
+                    {"openapi":"3.1.0","info":{"title":"FastAPI","version"...
+Forms             : {}
+Headers           : {[x-environment, dev], [Content-Length, 250], [Content-Type, application/json], [Date, Sun, 07  
+                    Dec 2025 15:59:57 GMT]...}
+Images            : {}
+InputFields       : {}                                                                                              Links             : {}                                                                                              ParsedHtml        : mshtml.HTMLDocumentClass                                                                        RawContentLength  : 250
